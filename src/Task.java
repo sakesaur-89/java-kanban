@@ -22,7 +22,6 @@ public class Task {
         this.description = description;
         this.status = TaskStatus.NEW;
         this.taskID = taskCounter++;
-
         this.subTasks.addAll(subTasks);
     }
 
@@ -54,7 +53,7 @@ public class Task {
             return false;
         }
         Task task1 = (Task) task;
-        if (this.getTaskID()==task1.getTaskID()) {
+        if (this.getTaskID() == task1.getTaskID()) {
             return true;
         }
         return Objects.equals(name, task1.name) && Objects.equals(description, task1.description);
@@ -63,8 +62,9 @@ public class Task {
     @Override
     public int hashCode() {
         int hash = 17; // объявляем и инициализируем переменную hash
-        String id = "" + this.getTaskID();
-        hash += id.hashCode();
+
+        hash += name.hashCode();
+        hash += 31 * description.hashCode();
         return hash;
     }
 

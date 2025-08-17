@@ -15,6 +15,7 @@ public class Epic extends Task {
     @Override
     public String toString() {
         String fullOutput = super.toString();
+        fullOutput = fullOutput.substring(0, fullOutput.length()-2);
         fullOutput += ", tasks.size='";
         int size = 0;
         for (Task task : tasks) {
