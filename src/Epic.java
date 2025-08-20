@@ -15,7 +15,8 @@ public class Epic extends Task {
     @Override
     public String toString() {
         String fullOutput = super.toString();
-        fullOutput = fullOutput.substring(0, fullOutput.length() - 1);
+        fullOutput = fullOutput.substring(4, fullOutput.length() - 1);
+        fullOutput = "Epic" + fullOutput;
         fullOutput += ", tasks.size='";
         int size = 0;
         for (Task task : tasks) {
@@ -25,5 +26,24 @@ public class Epic extends Task {
         fullOutput += "'";
         fullOutput += "}";
         return fullOutput;
+    }
+
+    @Override
+    public Task getTaskByID(int id) {
+        Task buffer = null;
+        for (Task task : tasks) {
+            if (task.getTaskID() == id) {
+                buffer = task;
+                break;
+            }
+        }
+        return buffer;
+    }
+
+    public void completeTask(int taskID) {
+        Task target = getTaskByID(taskID);
+        if (target != null) {
+            target.setStatus(TaskStatus.DONE);
+        }
     }
 }

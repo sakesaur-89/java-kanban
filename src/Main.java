@@ -3,21 +3,25 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) {
-        Task projectCreation = new Task("Этот проект", "Первый шаг - создать сами задания");
-        ArrayList<SubTask> creationSubTasks = new ArrayList<>();
-        SubTask coding = new SubTask("Написать код", "", creationSubTasks);
-        SubTask planning = new SubTask("Проектировка","", creationSubTasks);
-        creationSubTasks.add(coding);
-        creationSubTasks.add(planning);
-        Task projectCreationComplex = new Task("Разбиение", "Второй шаг, делить задания на малые подзадания",
-                creationSubTasks);
-        System.out.println(projectCreation);
-        System.out.println(projectCreationComplex);
-        ArrayList<Task> assignmentTasks = new ArrayList<>();
-        assignmentTasks.add(projectCreation);
-        assignmentTasks.add(projectCreationComplex);
-        Epic epic = new Epic("задание","проверка работы приложения", assignmentTasks);
-        System.out.println(epic);
-        System.out.println(epic.tasks.size());
+        ArrayList<Task> taskList = new ArrayList<>();
+        Task added = new Task("task", "content");
+        Task added2 = new Task("task2", "content");
+        Task added3 = new Task("task3", "content");
+        taskList.add(added);
+        taskList.add(added2);
+        Epic theEpic = new Epic("все подзадачи эпика", "", taskList);
+        TaskManager tTaskManager = new TaskManager();
+        tTaskManager.setATask(theEpic, theEpic.getTaskID(), theEpic.tasks);
+        tTaskManager.setATask(added3, added3.getTaskID());
+        tTaskManager.printTaskLists();
+        System.out.println(added.getStatus());
+        System.out.println(taskList.getFirst().getStatus());
+        tTaskManager.completeTaskOfEpic(2,added.getTaskID());
+        System.out.println(tTaskManager.getTaskByID(theEpic.getTaskID()).getTaskByID(added.getTaskID()).getStatus());
+        System.out.println(tTaskManager.getTaskByID(2).getStatus());
+        tTaskManager.removeTaskByID(added3.getTaskID());
+        //tTaskManager.printTaskLists();
+        tTaskManager.setATask(theEpic, added3.getTaskID());
+        tTaskManager.printTaskLists();
     }
 }

@@ -25,6 +25,19 @@ public class Task {
         this.subTasks.addAll(subTasks);
     }
 
+    public Task(String name, String description, int taskID, ArrayList<Task> tasks) {
+        this.taskID = taskID;
+        this.tasks = tasks;
+        this.name = name;
+        this.description = description;
+    }
+
+    public Task(String name, String description, int taskID) {
+        this.name = name;
+        this.description = description;
+        this.taskID = taskID;
+    }
+
     public TaskStatus getStatus() {
         return status;
     }
@@ -91,6 +104,10 @@ public class Task {
         }
         fullOutput += "}";
         return fullOutput;
+    }
+
+    public Task getTaskByID(int innerTaskID) {
+        return null;
     }
 
 }
