@@ -6,8 +6,8 @@ public class SubTask extends Task {
         super(name, description);
     }
 
-    public SubTask(String name, String description, ArrayList<SubTask> creationSubTasks) {
-        super(name, description, creationSubTasks);
+    public SubTask(String name, String description, int taskID) {
+        super(name, description, taskID);
     }
 
     @Override
