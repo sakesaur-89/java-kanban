@@ -1,101 +1,125 @@
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class TaskManager {
 
-    public ArrayList<Task> tasks = new ArrayList<>();
-    public ArrayList<Epic> epics;
+    public HashMap<Integer, Task> tasksByID = new HashMap<>();
 
-    public void printTaskLists() {
-        for (Task task : tasks) {
-            System.out.println(task);
+
+    public void printTaskList() {
+        for (int key : tasksByID.keySet()) {
+            System.out.println(tasksByID.get(key));
         }
     }
 
     public void clearTasks() {
-        tasks.clear();
-        Task.taskCounter = 0;
-    }
-
-    public Task getTaskByID(int id) {
-        Task buffer = null;
-        for (Task task : tasks) {
-            if (task.getTaskID() == id) {
-                buffer = task;
-                break;
-            }
-        }
-        return buffer;
-    }
-
-    public void printTaskLists(Task taskSample) {
-        for (Task task : tasks) {
-            if (task.getClass() == taskSample.getClass()) {
-                System.out.println(task);
-            }
-        }
+        tasksByID.clear();
     }
 
     public void clearTasks(Task taskSample) {
-        tasks.removeIf(task -> task.getClass() == taskSample.getClass());
-    }
-
-    public void createTask(Task task) {
-        tasks.add(task);
-    }
-
-    public void createTask(Epic epic, ArrayList<Task> tasks) {
-        tasks.add(epic);
-        for (Task task : tasks) {
-            getTaskByID(epic.getTaskID()).tasks.add(task);
-        }
-    }
-
-    public void setATask(Task task, int taskID) {
-        removeTaskByID(taskID);
-        tasks.add(task);
-    }
-
-    public void setATask(Epic epic, int taskID, ArrayList<Task> tasks) {
-        removeTaskByID(taskID);
-        this.tasks.add(epic);
-        for (Task task : tasks) {
-            getTaskByID(taskID).tasks.add(task);
-        }
-    }
-
-    public void removeTaskByID(int taskID) {
-        Task target = getTaskByID(taskID);
-        if (target != null) {
-            tasks.remove(target);
-        }
-    }
-
-    public void completeTask(int taskID) {
-        Task target = getTaskByID(taskID);
-        if (target != null) {
-            target.setStatus(TaskStatus.DONE);
-        }
-    }
-
-    public void completeTaskOfEpic(int taskID, int innerTaskID) {
-        Task target = getTaskByID(taskID);
-        if (target != null) {
-            Task innerTask = target.getTaskByID(innerTaskID);
-            if (innerTask != null) {
-                innerTask.setStatus(TaskStatus.DONE);
+        ArrayList<Integer> toRemove = new ArrayList<>();
+        for (int key : tasksByID.keySet()) {
+            if (tasksByID.get(key).getClass() == taskSample.getClass()) {
+                toRemove.add(key);
             }
         }
-        if (target != null && target.getClass() == Epic.class) {
-            boolean allSubTasksComplete = true;
-            for (Task task : target.tasks) {
-                allSubTasksComplete &= (task.getStatus() == TaskStatus.DONE);
+        for (Integer key : toRemove) {
+            tasksByID.remove(key);
+        }
+    }
+
+
+    public Task getTaskByID(int id) {
+        return tasksByID.get(id);
+    }
+
+    public void printTaskList(Task taskSample) {
+        for (int key : tasksByID.keySet()) {
+            if (tasksByID.get(key).getClass() == taskSample.getClass()) {
+                System.out.println(tasksByID.get(key));
             }
-            if (allSubTasksComplete) {
-                target.setStatus(TaskStatus.DONE); // статус объекта Epic
+        }
+    }
+
+
+    public void setTask(Task task) {
+        int taskID = task.getTaskID();
+        this.tasksByID.put(taskID, task);
+    }
+
+    public void setTask(Epic epic, ArrayList<Task> tasks) {
+        int taskID = epic.getTaskID();
+        this.tasksByID.put(taskID, epic);
+        if (epic.getClass() == Epic.class) {
+            for (Task task : epic.tasks) {
+                this.tasksByID.get(taskID).tasks.add(task);
+            }
+        }
+        statusUpdate(taskID);
+    }
+
+    public void setTask(Task task, ArrayList<SubTask> subTasks) {
+        int taskID = task.getTaskID();
+        this.tasksByID.put(taskID, task);
+        if (tasksByID.get(taskID).getClass() == Task.class) {
+            tasksByID.get(taskID).subTasks.addAll(subTasks);
+        }
+    }
+
+    public void createTask(String name, String description) {
+        Task task = new Task(name, description);
+        int taskID = task.getTaskID();
+        this.tasksByID.put(taskID, task);
+    }
+
+    public void createTask(String name, String description, ArrayList<SubTask> subTasks) {
+        Task task = new Task(name, description, subTasks);
+        int taskID = task.getTaskID();
+        this.tasksByID.put(taskID, task);
+        if (tasksByID.get(taskID).getClass() == Task.class) {
+            tasksByID.get(taskID).subTasks.addAll(subTasks);
+        }
+    }
+
+    public void createEpic(String name, String description) {
+        Epic epic = new Epic(name, description);
+        int taskID = epic.getTaskID();
+        this.tasksByID.put(taskID, epic);
+    }
+
+    public void createEpic(String name, String description, ArrayList<Task> tasks) {
+        Epic epic = new Epic(name, description, tasks);
+        int taskID = epic.getTaskID();
+        this.tasksByID.put(taskID, epic);
+        if (epic.getClass() == Epic.class) {
+            for (Task task : epic.tasks) {
+                this.tasksByID.get(taskID).tasks.add(task);
+            }
+        }
+        statusUpdate(taskID);
+    }
+
+    public void statusUpdate(int taskID) {
+        if ((tasksByID.get(taskID) != null) && (tasksByID.get(taskID).getClass() == Epic.class)) {
+            boolean allTasksNew = true;
+            for (Task task : tasksByID.get(taskID).tasks) {
+                allTasksNew &= task.getStatus() == TaskStatus.NEW;
+            }
+            if (allTasksNew) {
+                return;
+            }
+            boolean notAllTasksDone = false;
+            for (Task task : tasksByID.get(taskID).tasks) {
+                notAllTasksDone |= task.getStatus() == TaskStatus.NEW;
+            }
+            if (notAllTasksDone) {
+                tasksByID.get(taskID).setStatus(TaskStatus.IN_PROGRESS);
             } else {
-                target.setStatus(TaskStatus.IN_PROGRESS); // статус объекта Epic
+                tasksByID.get(taskID).setStatus(TaskStatus.DONE);
             }
         }
     }
+
 
 }

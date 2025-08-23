@@ -91,7 +91,10 @@ public class Task {
         fullOutput += "', ";
         fullOutput += "description.length='";
         fullOutput += description.length();
+        fullOutput += "', status='";
+        fullOutput = fullOutput + getStatus();
         fullOutput += "'";
+
 
         if (!subTasks.isEmpty()) {
             fullOutput += ", subTasks.size='";
