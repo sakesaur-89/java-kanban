@@ -68,6 +68,7 @@ public class Main {
         taskManager.clearTasks(subTask1);
         taskManager.printTaskList();
         System.out.println("(пусто)");
+        System.out.println("Создаем задачи заново черезх аргументы createTask:")
 
         taskManager.createTask("task", "content");
         taskManager.createTask("task", "content", subTaskArray);
